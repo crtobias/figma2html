@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>figma2html — medí el diseño, no lo aproximes</title>
+<meta name="description" content="Convertí un archivo de Figma en HTML con las medidas exactas de cada nodo. Corre entero en tu navegador: tu token nunca sale de tu máquina.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffb020' stroke-width='2' stroke-linecap='round'><path d='M3 3v18h18'/><path d='M7 21v-4M11 21v-6M15 21v-3M19 21v-8'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/app.css">
+</head>
+<body>
+
+<!-- Nav ---------------------------------------------------------------------------------- -->
+<nav class="nav">
+  <a class="marca" href="#">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+      <path d="M3 3v18h18"></path><path d="M7 21v-4M11 21v-6M15 21v-3M19 21v-8"></path>
+    </svg>
+    <span class="mono">figma2html</span>
+  </a>
+  <div class="nav-links">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#privacidad">Privacidad</a>
+    <a class="boton-fantasma" data-link="repo" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02.8-.22 1.65-.33 2.5-.33s1.7.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 22 12c0-5.52-4.48-10-10-10z"></path></svg>
+      Código
+    </a>
+  </div>
+</nav>
+
+<!-- Hero --------------------------------------------------------------------------------- -->
+<header class="hero">
+  <div class="hero-texto">
+    <p class="kicker mono">Open source · corre en tu navegador</p>
+
+    <!-- El título va medido como un frame de Figma: es literalmente lo que hace la herramienta. -->
+    <div class="medido">
+      <span class="tick tl"></span><span class="tick tr"></span>
+      <span class="tick bl"></span><span class="tick br"></span>
+      <span class="cota-h mono">632 × 178</span>
+      <span class="cota-v mono">↕ 178</span>
+      <h1>Medí el diseño.<br><span class="acento">No lo aproximes.</span></h1>
+    </div>
+
+    <p class="bajada">
+      Convertí cualquier archivo de Figma en HTML donde cada elemento está en su caja exacta.
+      Abrís las DevTools y leés el ancho, el alto y el padding reales — en vez de sacarlos a ojo.
+    </p>
+
+    <ul class="sellos">
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        Tu token no sale de tu máquina
+      </li>
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.2-8.6"></path><path d="M22 4L12 14l-3-3"></path></svg>
+        No gasta tu cuota de Figma
+      </li>
+    </ul>
+  </div>
+
+  <!-- Formulario: URL + token, y nada más ------------------------------------------------ -->
+  <form class="tarjeta-form" id="form">
+    <div class="campo">
+      <label for="url">URL del archivo de Figma</label>
+      <input type="url" id="url" class="mono" placeholder="figma.com/design/AbC123…" autocomplete="off" spellcheck="false" required>
+    </div>
+
+    <div class="campo">
+      <label for="token">Tu token personal de Figma</label>
+      <input type="password" id="token" class="mono" placeholder="figd_••••••••••••••••" autocomplete="off" spellcheck="false" required>
+      <a class="enlace-menor" href="#token-como">¿De dónde saco el token? →</a>
+    </div>
+
+    <button class="primario" id="convertir">
+      Convertir a HTML
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"></path><path d="M12 5l7 7-7 7"></path></svg>
+    </button>
+
+    <div class="fila-form">
+      <label class="recordar"><input type="checkbox" id="recordar"> Recordar el token acá</label>
+      <a href="#" id="elegir">elegir pantallas →</a>
+    </div>
+
+    <p class="nota-privacidad" id="privacidad">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+      <span>Esta página es HTML estático. El pedido va de tu navegador directo a
+      <code>api.figma.com</code> — no hay servidor en el medio.</span>
+    </p>
+
+    <p class="estado" id="estado" role="status"></p>
+  </form>
+</header>
+
+<main>
+  <!-- Progreso y descarga ---------------------------------------------------------------- -->
+  <section class="panel oculto" id="paso-listo">
+    <div class="progreso"><div class="barra" id="barra"></div></div>
+    <p class="estado" id="estado-3" role="status"></p>
+    <div id="resultado"></div>
+  </section>
+
+  <!-- Selector opcional ------------------------------------------------------------------ -->
+  <section class="panel oculto" id="paso-elegir">
+    <h2 class="titulo-panel">Elegí qué exportar</h2>
+    <div class="barra-lista">
+      <input type="search" id="filtro" placeholder="Filtrar por nombre…">
+      <button type="button" data-sel="todos" class="chip">Todos</button>
+      <button type="button" data-sel="ninguno" class="chip">Ninguno</button>
+      <button type="button" data-sel="desktop" class="chip">Desktop</button>
+      <button type="button" data-sel="mobile" class="chip">Mobile</button>
+      <span class="contador mono" id="contador"></span>
+    </div>
+    <div class="lista" id="lista"></div>
+    <button class="primario" id="exportar">Exportar las seleccionadas</button>
+  </section>
+
+  <!-- Cómo funciona ---------------------------------------------------------------------- -->
+  <section class="pasos" id="como-funciona">
+    <article>
+      <span class="mono paso-num">01</span>
+      <h3>Baja el árbol</h3>
+      <p>Posición, tamaño, color y texto de cada nodo, tal como los reporta Figma.</p>
+    </article>
+    <article>
+      <span class="mono paso-num">02</span>
+      <h3>Dibuja cada caja</h3>
+      <p>En posición absoluta, con las coordenadas exactas. Sin flex adivinado.</p>
+    </article>
+    <article>
+      <span class="mono paso-num">03</span>
+      <h3>Te da un .zip</h3>
+      <p>Índice navegable, una pantalla por archivo y los íconos como SVG locales.</p>
+    </article>
+  </section>
+
+  <!-- La cuota --------------------------------------------------------------------------- -->
+  <section class="banda">
+    <div class="banda-texto">
+      <h2>No te agota la cuota de Figma</h2>
+      <p>
+        El endpoint que renderiza imágenes cuenta su cuota <strong>por llamada, no por ícono</strong>:
+        una cuenta gratuita tiene unas 20 al mes. Una sola extracción grande la quema entera.
+      </p>
+      <p>
+        Esta herramienta nunca lo toca. Pide la geometría vectorial —otro endpoint, otro
+        presupuesto— y arma los SVG en tu navegador.
+      </p>
+    </div>
+    <div class="consola mono">
+      <span class="tenue">GET /v1/images</span>
+      <span class="rojo">HTTP/2 429 Rate limit exceeded</span>
+      <span class="rojo">retry-after: 324811</span>
+      <span class="tenue chico">↑ 90 horas de espera</span>
+      <span class="separador"></span>
+      <span class="tenue">GET /nodes?geometry=paths</span>
+      <span class="verde">HTTP/2 200 OK</span>
+      <span class="tenue chico">↑ lo que usa esta herramienta</span>
+    </div>
+  </section>
+
+  <!-- Features --------------------------------------------------------------------------- -->
+  <section class="features">
+    <h2>Qué te llevás</h2>
+    <div class="grilla">
+      <article>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="2"></rect><path d="M6 7v4M10 7v3M14 7v4M18 7v3"></path></svg>
+        <h3>Medidas exactas</h3>
+        <p>Cada nodo en las coordenadas que reporta Figma. Nada redondeado a una grilla de 8.</p>
+      </article>
+      <article>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4H6a2 2 0 0 0-2 2v2M16 4h2a2 2 0 0 1 2 2v2M8 20H6a2 2 0 0 1-2-2v-2M16 20h2a2 2 0 0 0 2-2v-2"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
+        <h3>Inspeccionable</h3>
+        <p>Cada elemento lleva <code>data-node-id</code> y su nombre de capa. Buscá cualquier cosa en las DevTools.</p>
+      </article>
+      <article>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"></path><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"></path></svg>
+        <h3>Íconos que no vencen</h3>
+        <p>Los SVG quedan locales en el .zip. Las URLs de assets de Figma se caen a los 7 días.</p>
+      </article>
+      <article>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h6v14H4zM14 5h6v8h-6z"></path></svg>
+        <h3>Índice navegable</h3>
+        <p>Todas las pantallas en una página, con buscador, escala 1:1 y un modo "ver cajas".</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- El token ---------------------------------------------------------------------------- -->
+  <section class="aviso" id="token-como">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 7.5v.01"></path></svg>
+    <div>
+      <h3>De dónde sale el token</h3>
+      <p>
+        En Figma: tu avatar → <em>Settings</em> → pestaña <em>Security</em> →
+        <em>Personal access tokens</em> → <em>Generate new token</em>.
+        Alcanza con el permiso <em>File content: Read only</em>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Honestidad --------------------------------------------------------------------------- -->
+  <section class="aviso punteado">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16.5v.01"></path></svg>
+    <div>
+      <h3>Para qué NO sirve</h3>
+      <p>
+        Lo que sale es un documento de referencia para medir, no markup para producción. Si querés
+        código listo para pegar en tu app, usá el MCP de Figma: interpreta el diseño y te devuelve
+        componentes. Esto hace lo contrario a propósito — te da el hecho crudo.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="pie-marca">
+    <span class="marca">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M3 3v18h18"></path><path d="M7 21v-4M11 21v-6M15 21v-3M19 21v-8"></path></svg>
+      <span class="mono">figma2html</span>
+    </span>
+    <p>Sin backend · sin analytics · sin cookies.</p>
+  </div>
+  <nav class="pie-links" id="links"></nav>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="module" src="src/app.js"></script>
+</body>
+</html>

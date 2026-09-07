@@ -1,0 +1,446 @@
+/* figma2html — sistema visual "blueprint": fondo técnico oscuro, un acento ámbar y numerales
+   monoespaciados. La medida es el tema del producto, así que la tipografía la trata como dato. */
+
+:root {
+  --ground: #0e0f12;
+  --panel: #16181c;
+  --panel-2: #121419;
+  --hueco: #0b0c0f;
+  --line: #23262c;
+  --line-suave: #1c1f24;
+  --borde-input: #2a2e35;
+
+  --text: #e7e9ec;
+  --text-2: #c3c9d1;
+  --muted: #8b929c;
+  --muted-2: #6b727c;
+  --placeholder: #5c636d;
+
+  --acento: #ffb020;
+  --acento-claro: #ffc95c;
+  --frio: #6ea8fe;
+  --ok: #5ddb9a;
+  --mal: #ff6b6b;
+
+  --borde-r: 12px;
+  --pad-x: 80px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--text);
+  font: 400 16px/1.5 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono { font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace; }
+h1, h2, h3 { letter-spacing: -0.02em; }
+a { color: var(--acento); text-decoration: none; }
+a:hover { color: var(--acento-claro); }
+code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--hueco);
+  color: var(--text-2);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.87em;
+}
+.oculto { display: none !important; }
+svg { flex-shrink: 0; }
+
+/* --- Nav ----------------------------------------------------------------------------------- */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px var(--pad-x);
+  border-bottom: 1px solid var(--line-suave);
+}
+.marca { display: flex; align-items: center; gap: 11px; color: var(--text); }
+.marca svg { width: 22px; height: 22px; color: var(--acento); }
+.marca .mono { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.nav-links { display: flex; align-items: center; gap: 30px; font-size: 14.5px; }
+.nav-links > a { color: var(--muted); }
+.nav-links > a:hover { color: var(--text); }
+.boton-fantasma {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px;
+  border: 1px solid var(--borde-input);
+  border-radius: 7px;
+  color: var(--text) !important;
+}
+.boton-fantasma svg { width: 15px; height: 15px; }
+.boton-fantasma:hover { border-color: var(--acento); }
+
+/* --- Hero ---------------------------------------------------------------------------------- */
+.hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 72px;
+  padding: 82px var(--pad-x) 92px;
+}
+.hero-texto { flex: 1 1 auto; min-width: 0; }
+
+.kicker {
+  margin: 0 0 26px;
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acento);
+}
+
+/* El título medido: las marcas replican cómo Figma muestra un frame seleccionado. Son
+   decoración semánticamente vacía — de ahí que sean spans y no texto. */
+.medido { position: relative; display: inline-block; padding: 18px 0 20px; }
+.medido::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 176, 32, 0.42);
+}
+.tick {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: var(--ground);
+  border: 1.5px solid var(--acento);
+}
+.tl { left: -4px; top: -4px; }
+.tr { right: -4px; top: -4px; }
+.bl { left: -4px; bottom: -4px; }
+.br { right: -4px; bottom: -4px; }
+.cota-h {
+  position: absolute;
+  left: 50%;
+  bottom: -13px;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  background: var(--acento);
+  color: var(--ground);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cota-v {
+  position: absolute;
+  right: -70px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11.5px;
+  color: var(--frio);
+}
+.medido h1 {
+  margin: 0;
+  font-size: clamp(40px, 5.3vw, 76px);
+  line-height: 1.02;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+.acento { color: var(--acento); }
+
+.bajada {
+  margin: 40px 0 0;
+  max-width: 545px;
+  font-size: 19.5px;
+  line-height: 1.55;
+  color: #a8afb9;
+  text-wrap: pretty;
+}
+
+.sellos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  margin: 38px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.sellos li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+.sellos svg { width: 17px; height: 17px; color: var(--frio); }
+
+/* --- Formulario ----------------------------------------------------------------------------- */
+.tarjeta-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 0 0 456px;
+  padding: 32px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.campo { display: flex; flex-direction: column; gap: 9px; }
+.campo label { font-size: 13px; font-weight: 500; color: var(--text-2); }
+.tarjeta-form input[type='url'],
+.tarjeta-form input[type='password'] {
+  width: 100%;
+  padding: 13px 15px;
+  background: var(--ground);
+  border: 1px solid var(--borde-input);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13.5px;
+  font-family: inherit;
+}
+.tarjeta-form input::placeholder { color: var(--placeholder); }
+.tarjeta-form input:focus { outline: none; border-color: var(--acento); }
+.enlace-menor { font-size: 12.5px; color: var(--frio); }
+.enlace-menor:hover { color: #9cc4ff; }
+
+.primario {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  background: var(--acento);
+  color: var(--ground);
+  font: 600 15.5px 'Space Grotesk', system-ui, sans-serif;
+  cursor: pointer;
+}
+.primario svg { width: 17px; height: 17px; }
+.primario:hover:not(:disabled) { background: var(--acento-claro); }
+.primario:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.fila-form {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.recordar { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+.recordar input { accent-color: var(--acento); }
+.fila-form > a { color: var(--muted); }
+.fila-form > a:hover { color: var(--text); }
+
+.nota-privacidad {
+  display: flex;
+  gap: 11px;
+  margin: 0;
+  padding: 14px;
+  background: rgba(110, 168, 254, 0.07);
+  border: 1px solid rgba(110, 168, 254, 0.22);
+  border-radius: 8px;
+  font-size: 12.8px;
+  line-height: 1.5;
+  color: #99a3b0;
+}
+.nota-privacidad svg { width: 16px; height: 16px; margin-top: 1px; color: var(--frio); }
+
+.estado { margin: 0; font-size: 13.5px; color: var(--muted); }
+.estado:empty { display: none; }
+.estado.bien { color: var(--ok); }
+.estado.mal { color: var(--mal); }
+.estado.trabajando { color: var(--text-2); }
+
+/* --- Paneles de trabajo (progreso y selector) ------------------------------------------------ */
+.panel {
+  margin: 0 var(--pad-x) 40px;
+  padding: 28px 32px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.titulo-panel { margin: 0 0 18px; font-size: 20px; font-weight: 600; }
+.progreso { height: 5px; background: var(--hueco); border-radius: 3px; overflow: hidden; }
+.barra { width: 0; height: 100%; background: var(--acento); transition: width 0.25s ease; }
+#paso-listo .estado { margin-top: 14px; }
+.descarga {
+  display: inline-flex;
+  width: auto;
+  margin: 18px 0 12px;
+  padding: 15px 22px;
+  text-decoration: none;
+}
+.ayuda { margin: 0; font-size: 13px; line-height: 1.55; color: var(--muted); }
+
+.barra-lista { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-bottom: 14px; }
+.barra-lista input[type='search'] {
+  flex: 1 1 190px;
+  padding: 9px 13px;
+  background: var(--ground);
+  border: 1px solid var(--borde-input);
+  border-radius: 7px;
+  color: var(--text);
+  font: inherit;
+  font-size: 13.5px;
+}
+.barra-lista input:focus { outline: none; border-color: var(--acento); }
+.chip {
+  padding: 8px 13px;
+  border: 1px solid var(--borde-input);
+  border-radius: 7px;
+  background: var(--ground);
+  color: var(--muted);
+  font: 500 12.5px 'Space Grotesk', system-ui, sans-serif;
+  cursor: pointer;
+}
+.chip:hover { border-color: var(--acento); color: var(--acento); }
+.contador { flex: 1 0 100%; font-size: 12px; color: var(--muted-2); }
+
+.lista {
+  max-height: 360px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--line-suave);
+  cursor: pointer;
+}
+.fila:last-child { border-bottom: none; }
+.fila:hover { background: rgba(255, 255, 255, 0.025); }
+.fila.oculto { display: none !important; }
+.fila input { accent-color: var(--acento); }
+.nombre { flex: 1; min-width: 0; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.medida { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: var(--muted-2); }
+.vp { padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+.vp-desktop { background: rgba(110, 168, 254, 0.14); color: #8fb4e8; }
+.vp-mobile { background: rgba(255, 176, 32, 0.14); color: var(--acento); }
+
+/* --- Cómo funciona --------------------------------------------------------------------------- */
+.pasos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0 var(--pad-x) 96px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.pasos article {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 34px 32px;
+  background: var(--panel-2);
+}
+.paso-num { font-size: 12px; color: var(--acento); }
+.pasos h3 { margin: 0; font-size: 18px; font-weight: 600; }
+.pasos p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+
+/* --- Banda de la cuota ------------------------------------------------------------------------ */
+.banda {
+  display: flex;
+  gap: 64px;
+  margin: 0 var(--pad-x) 96px;
+  padding: 52px 56px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.banda-texto { flex: 1 1 auto; min-width: 0; }
+.banda h2 { margin: 0 0 18px; font-size: 33px; font-weight: 600; }
+.banda p { margin: 0 0 16px; max-width: 560px; font-size: 16.5px; line-height: 1.6; color: #a8afb9; text-wrap: pretty; }
+.banda p:last-child { margin-bottom: 0; }
+.banda strong { color: var(--text); font-weight: 600; }
+
+.consola {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 0 0 372px;
+  padding: 22px;
+  background: var(--hueco);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 12.5px;
+}
+.consola .tenue { color: var(--placeholder); }
+.consola .chico { font-size: 11.5px; }
+.consola .rojo { color: var(--mal); }
+.consola .verde { color: var(--ok); }
+.consola .separador { height: 1px; background: var(--line); }
+
+/* --- Features ---------------------------------------------------------------------------------- */
+.features { margin: 0 var(--pad-x) 96px; }
+.features > h2 { margin: 0 0 34px; font-size: 33px; font-weight: 600; }
+.grilla { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.grilla article {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 30px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--borde-r);
+}
+.grilla svg { width: 21px; height: 21px; color: var(--acento); }
+.grilla h3 { margin: 0; font-size: 18.5px; font-weight: 600; }
+.grilla p { margin: 0; font-size: 14.8px; line-height: 1.6; color: var(--muted); }
+
+/* --- Avisos -------------------------------------------------------------------------------------- */
+.aviso {
+  display: flex;
+  gap: 22px;
+  margin: 0 var(--pad-x) 40px;
+  padding: 34px 38px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--borde-r);
+}
+.aviso.punteado { margin-bottom: 92px; background: none; border: 1px dashed #34383f; }
+.aviso > svg { width: 21px; height: 21px; margin-top: 3px; color: var(--muted); }
+.aviso h3 { margin: 0 0 9px; font-size: 18.5px; font-weight: 600; }
+.aviso p { margin: 0; max-width: 830px; font-size: 15.5px; line-height: 1.6; color: var(--muted); text-wrap: pretty; }
+.aviso em { font-style: normal; color: var(--text-2); }
+
+/* --- Footer ---------------------------------------------------------------------------------------- */
+footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 44px var(--pad-x) 52px;
+  border-top: 1px solid var(--line-suave);
+}
+.pie-marca .marca { margin-bottom: 12px; }
+.pie-marca svg { width: 18px; height: 18px; }
+.pie-marca p { margin: 0; font-size: 13.5px; color: var(--muted-2); }
+.pie-links { display: flex; flex-wrap: wrap; gap: 34px; font-size: 14.5px; }
+
+/* --- Angosto ----------------------------------------------------------------------------------------- */
+@media (max-width: 1180px) {
+  :root { --pad-x: 40px; }
+  .hero { flex-direction: column; gap: 48px; padding-top: 60px; padding-bottom: 68px; }
+  .tarjeta-form { flex-basis: auto; width: 100%; max-width: 520px; }
+  .banda { flex-direction: column; gap: 36px; padding: 40px; }
+  .consola { flex-basis: auto; }
+  .cota-v { display: none; }
+}
+
+@media (max-width: 760px) {
+  :root { --pad-x: 22px; }
+  .nav { padding: 18px var(--pad-x); }
+  .nav-links > a:not(.boton-fantasma) { display: none; }
+  .bajada { font-size: 17px; }
+  .sellos { flex-direction: column; gap: 12px; }
+  .pasos, .grilla { grid-template-columns: minmax(0, 1fr); }
+  .banda h2, .features > h2 { font-size: 26px; }
+  .panel { padding: 22px; }
+  .aviso { flex-direction: column; gap: 14px; padding: 26px 24px; }
+  footer { flex-direction: column; gap: 24px; }
+  .pie-links { gap: 20px; }
+}
