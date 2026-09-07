@@ -81,6 +81,7 @@ export const TEXTOS = {
 
     'pie.nota': 'Sin backend · sin analytics · sin cookies.',
     'pie.repo': 'Repositorio',
+    'pie.autor': 'Hecho por',
   },
 
   en: {
@@ -152,6 +153,7 @@ export const TEXTOS = {
 
     'pie.nota': 'No backend · no analytics · no cookies.',
     'pie.repo': 'Repository',
+    'pie.autor': 'Built by',
   },
 };
 

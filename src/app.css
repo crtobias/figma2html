@@ -441,6 +441,9 @@ footer {
 .pie-marca .marca { margin-bottom: 12px; }
 .pie-marca svg { width: 18px; height: 18px; }
 .pie-marca p { margin: 0; font-size: 13.5px; color: var(--muted-2); }
+.autor { margin-top: 6px !important; }
+.autor a { color: var(--muted); }
+.autor a:hover { color: var(--acento); }
 .pie-links { display: flex; flex-wrap: wrap; gap: 34px; font-size: 14.5px; }
 
 /* --- Angosto ----------------------------------------------------------------------------------------- */

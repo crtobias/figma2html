@@ -2,13 +2,14 @@
 import { parseFileKey } from './figma.js';
 import { TEXTOS, PIEZAS, IDIOMAS, idiomaPreferido } from './i18n.js';
 
-/** ⬇ TODO: completá con tus links. Es lo único que hay que tocar para publicar tu copia.
- *  `repo` además alimenta el botón "Código" de la barra superior. */
+/** Los links del pie. `repo` además alimenta el botón "Código" de la barra superior.
+ *  Si clonás esto para publicar tu propia copia, es lo único que hay que cambiar. */
+const AUTOR = 'Tobias González Arriola';
 const ENLACES = {
-  repo: 'https://github.com/TU-USUARIO/FigmaToHtml',
-  GitHub: 'https://github.com/TU-USUARIO',
-  LinkedIn: 'https://www.linkedin.com/in/TU-USUARIO',
-  Portfolio: 'https://TU-PORTFOLIO.com',
+  repo: 'https://github.com/crtobias/figma2html',
+  GitHub: 'https://github.com/crtobias',
+  LinkedIn: 'https://www.linkedin.com/in/tobias-gonzalez-arriola-0a2399273/',
+  Portfolio: 'https://tobias-gonzalez-arriola.vercel.app/',
 };
 
 const $ = (s) => document.querySelector(s);
@@ -112,6 +113,7 @@ function pintarLinks() {
       return `<a href="${url}" target="_blank" rel="noopener">${nombre}</a>`;
     }).join('');
   $('[data-link="repo"]').href = ENLACES.repo;
+  $('#autor').innerHTML = `${TEXTOS[idioma]['pie.autor']} <a href="${ENLACES.Portfolio}" target="_blank" rel="noopener">${AUTOR}</a>`;
 }
 pintarIdiomas();
 pintarLinks();
