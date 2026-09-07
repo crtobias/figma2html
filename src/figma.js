@@ -19,8 +19,19 @@ export function parseFileKey(entrada) {
   return /^[A-Za-z0-9]{10,}$/.test(limpio) ? limpio : null;
 }
 
+async function pedirTexto(url, token) {
+  const r = await fetch(url, { headers: { 'X-Figma-Token': token } });
+  await revisar(r);
+  return r.text();
+}
+
 async function pedir(url, token) {
   const r = await fetch(url, { headers: { 'X-Figma-Token': token } });
+  await revisar(r);
+  return r.json();
+}
+
+async function revisar(r) {
   if (r.status === 403) throw new Error('Token rechazado (403). Revisá que sea válido y tenga permiso "File content: Read only".');
   if (r.status === 404) throw new Error('Archivo no encontrado (404). Revisá la URL, o que tu cuenta tenga acceso a ese archivo.');
   if (r.status === 429) {
@@ -28,12 +39,19 @@ async function pedir(url, token) {
     throw new Error(`Rate limit de Figma (429).${espera ? ` Retry-After: ${espera}s.` : ''}`);
   }
   if (!r.ok) throw new Error(`La API respondió ${r.status}.`);
-  return r.json();
 }
 
-/** El árbol completo, con geometría de cajas, fills, strokes, efectos y texto. */
-export function getFile(fileKey, token) {
-  return pedir(`https://api.figma.com/v1/files/${fileKey}`, token);
+/** El árbol completo, con geometría de cajas, fills, strokes, efectos y texto.
+ *
+ * Devuelve también cuántos bytes pesó: es el número con el que la interfaz decide si avisar que
+ * el archivo es grande. Se lee del cuerpo y no del `Content-Length`, que viene comprimido y
+ * miente por un factor de diez sobre lo que realmente ocupa en memoria.
+ */
+export async function getFile(fileKey, token) {
+  const texto = await pedirTexto(`https://api.figma.com/v1/files/${fileKey}`, token);
+  const doc = JSON.parse(texto);
+  doc.__bytes = texto.length;
+  return doc;
 }
 
 /** Igual que getFile pero acotado a unos nodos y **con las curvas**.

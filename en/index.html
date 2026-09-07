@@ -239,6 +239,34 @@
     </div>
   </section>
 
+  <!-- Límites ------------------------------------------------------------------------------- -->
+  <section class="limites" id="limites">
+    <h2 data-i18n="limites.titulo">Limits, up front</h2>
+    <p class="limites-intro" data-i18n="limites.intro">Everything runs in your tab’s memory. There is no server sharing the load, so the ceiling is your browser’s.</p>
+    <div class="grilla">
+      <article>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M7 9v6M11 9v6M15 9v6"></path></svg>
+        <h3 data-i18n="limites.1t">How much it takes</h3>
+        <p data-i18n="limites.1p">An 80-screen file moves about 50 MB of JSON and produces a ~9 MB .zip. That is comfortable. Well past that the tab can run out of memory — if your file is huge, use “pick screens” and go in batches.</p>
+      </article>
+      <article>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M3 16l5-5 4 4 3-3 6 6"></path><circle cx="9" cy="9" r="1.3"></circle><path d="M4 20L20 4"></path></svg>
+        <h3 data-i18n="limites.2t">Images don’t come out</h3>
+        <p data-i18n="limites.2p">Only text and vectors are exported. Photos and any image fill end up as an empty box of the right size. Fine for measuring; if you expected to see the photos, this is not the tool.</p>
+      </article>
+      <article>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 3a9 9 0 0 0 0 18z"></path></svg>
+        <h3 data-i18n="limites.3t">Gradients and effects</h3>
+        <p data-i18n="limites.3p">Each fill contributes its first solid color, so a gradient comes out flat. Blurs are not reproduced either. Approximating them would mislead more than leaving them out.</p>
+      </article>
+      <article>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+        <h3 data-i18n="limites.4t">The quota still exists</h3>
+        <p data-i18n="limites.4p">The image endpoint is never touched, but reading the file and its geometry spends budget too. A handful of large exports back to back can earn you a 429; it clears on its own.</p>
+      </article>
+    </div>
+  </section>
+
   <!-- Honestidad --------------------------------------------------------------------------- -->
   <section class="aviso punteado">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16.5v.01"></path></svg>

@@ -76,12 +76,25 @@ export const TEXTOS = {
     'token.titulo': 'De dónde sale el token',
     'token.p': 'En Figma: tu avatar → {settings} → pestaña {security} → {tokens} → {generate}. Alcanza con el permiso {permiso}.',
 
+    'limites.titulo': 'Límites, dichos de frente',
+    'limites.intro': 'Todo corre en la memoria de tu pestaña. No hay servidor que reparta el trabajo, así que el techo es el de tu navegador.',
+    'limites.1t': 'Cuánto aguanta',
+    'limites.1p': 'Un archivo de 80 pantallas mueve unos 50 MB de JSON y sale un .zip de ~9 MB. Hasta ahí anda cómodo. Muy por encima de eso la pestaña puede quedarse sin memoria — si tu archivo es enorme, usá "elegir pantallas" y andá por tandas.',
+    'limites.2t': 'Las imágenes no salen',
+    'limites.2p': 'Sólo se exportan texto y vectores. Las fotos y cualquier relleno de imagen quedan como una caja vacía del tamaño correcto. Para medir alcanza; si esperabas ver las fotos, no es la herramienta.',
+    'limites.3t': 'Degradados y efectos',
+    'limites.3p': 'De cada relleno se toma el primer color sólido: un degradado sale plano. Los desenfoques tampoco se replican. Aproximarlos engañaría más que dejarlos afuera.',
+    'limites.4t': 'La cuota igual existe',
+    'limites.4p': 'No se toca el endpoint de imágenes, pero bajar el archivo y su geometría también consume presupuesto. Un puñado de exportaciones grandes seguidas te puede dar un 429; se libera solo.',
+
     'no.titulo': 'Para qué NO sirve',
     'no.p': 'Lo que sale es un documento de referencia para medir, no markup para producción. Si querés código listo para pegar en tu app, usá el MCP de Figma: interpreta el diseño y te devuelve componentes. Esto hace lo contrario a propósito — te da el hecho crudo.',
 
     'pie.nota': 'Sin backend · sin analytics · sin cookies.',
     'pie.repo': 'Repositorio',
     'pie.autor': 'Hecho por',
+    'estado.frames': 'frames en',
+    'estado.pesado': 'El archivo pesa {mb} MB. Es grande para hacerlo de una sola vez: elegí unas cuantas pantallas y andá por tandas.',
   },
 
   en: {
@@ -148,12 +161,25 @@ export const TEXTOS = {
     'token.titulo': 'Where the token comes from',
     'token.p': 'In Figma: your avatar → {settings} → {security} tab → {tokens} → {generate}. The {permiso} scope is enough.',
 
+    'limites.titulo': 'Limits, up front',
+    'limites.intro': 'Everything runs in your tab’s memory. There is no server sharing the load, so the ceiling is your browser’s.',
+    'limites.1t': 'How much it takes',
+    'limites.1p': 'An 80-screen file moves about 50 MB of JSON and produces a ~9 MB .zip. That is comfortable. Well past that the tab can run out of memory — if your file is huge, use “pick screens” and go in batches.',
+    'limites.2t': 'Images don’t come out',
+    'limites.2p': 'Only text and vectors are exported. Photos and any image fill end up as an empty box of the right size. Fine for measuring; if you expected to see the photos, this is not the tool.',
+    'limites.3t': 'Gradients and effects',
+    'limites.3p': 'Each fill contributes its first solid color, so a gradient comes out flat. Blurs are not reproduced either. Approximating them would mislead more than leaving them out.',
+    'limites.4t': 'The quota still exists',
+    'limites.4p': 'The image endpoint is never touched, but reading the file and its geometry spends budget too. A handful of large exports back to back can earn you a 429; it clears on its own.',
+
     'no.titulo': 'What it is NOT for',
     'no.p': 'What comes out is a reference document to measure against, not production markup. If you want code to paste into your app, use the Figma MCP: it interprets the design and gives you components. This does the opposite on purpose — it gives you the raw fact.',
 
     'pie.nota': 'No backend · no analytics · no cookies.',
     'pie.repo': 'Repository',
     'pie.autor': 'Built by',
+    'estado.frames': 'frames in',
+    'estado.pesado': 'The file weighs {mb} MB. That is large for one go: pick a handful of screens and export in batches.',
   },
 };
 

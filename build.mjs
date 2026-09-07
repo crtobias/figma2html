@@ -12,6 +12,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { TEXTOS, PIEZAS } from './src/i18n.js';
+// Importar los módulos del worker acá no se usa para nada: es la guardia. Un error de sintaxis
+// en cualquiera de ellos —el clásico es un backtick dentro del template literal de shell.js—
+// rompe el worker en silencio, y el síntoma es una barra de progreso que no avanza nunca. Que
+// falle el build en vez del navegador.
+import './src/shell.js';
+import './src/extract.js';
+import './src/svg.js';
+import './src/figma.js';
 
 const BASE = path.dirname(fileURLToPath(import.meta.url));
 const SALIDA = path.join(BASE, 'en');

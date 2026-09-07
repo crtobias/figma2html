@@ -24,7 +24,7 @@ async function analizar({ key, token }) {
   log(`archivo "${doc.name}" bajado en ${((performance.now() - t0) / 1000).toFixed(1)}s`);
   const frames = listarFrames(doc);
   log(frames.length, 'frames encontrados');
-  postMessage({ tipo: 'frames', nombre: doc.name, frames });
+  postMessage({ tipo: 'frames', nombre: doc.name, frames, bytes: doc.__bytes });
 }
 
 /** Las familias tipográficas que el archivo usa, para pedirle a Google Fonts sólo esas. */

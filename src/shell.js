@@ -56,6 +56,19 @@ export function construirIndice(pantallas, { titulo, subtitulo, fuentes = [] }) 
   .wf-nav h1 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
   .wf-nav p  { margin: 0 0 12px; font-size: 12px; color: var(--wf-muted); }
   .wf-leyenda { display: flex; align-items: center; gap: 6px; margin-bottom: 18px !important; font-size: 11px; }
+  .wf-firma {
+    margin: 22px 10px 0 !important;
+    padding-top: 16px;
+    border-top: 1px solid var(--wf-line);
+    font-size: 11px;
+    line-height: 1.6;
+    color: #6d747b;
+  }
+  /* El selector lleva '.wf-nav' adelante a propósito: '.wf-nav a' —que hace flex a cada link
+     del índice— se declara más abajo en esta misma hoja, así que con la misma especificidad
+     ganaba por orden y partía la firma en un renglón por link. */
+  .wf-nav .wf-firma a { display: inline; padding: 0; color: var(--wf-accent); text-decoration: none; }
+  .wf-nav .wf-firma a:hover { text-decoration: underline; }
   .wf-leyenda .wf-navVp { margin-left: 6px; }
   .wf-leyenda .wf-navVp:first-child { margin-left: 0; }
   .wf-nav a {
@@ -108,6 +121,10 @@ export function construirIndice(pantallas, { titulo, subtitulo, fuentes = [] }) 
     <span class="wf-navVp wf-navVp-mobile"></span> mobile
   </p>
 ${lineas.join('\n')}
+  <p class="wf-firma">
+    Generado con <a href="https://figma2html.online/" target="_blank" rel="noopener">figma2html.online</a><br>
+    por <a href="https://github.com/crtobias" target="_blank" rel="noopener">crtobias</a>
+  </p>
 </nav>
 
 <div class="wf-tools">

@@ -282,7 +282,22 @@ worker.onmessage = async ({ data: d }) => {
     nombreArchivo = d.nombre || 'figma-export';
     frames = d.frames.map((f) => ({ ...f, sel: true }));
     if (!frames.length) return estado('#estado', 'No encontré frames en ese archivo.', 'mal');
-    estado('#estado', `${frames.length} frames en "${d.nombre}"`, 'bien');
+
+    // El peso del árbol es el mejor anticipo de si esto va a entrar en memoria: la geometría que
+    // falta pedir suele pesar el doble, y todo convive en la pestaña al mismo tiempo. Por encima
+    // del umbral conviene ir por tandas, así que en vez de exportar todo se abre el selector.
+    const mb = d.bytes ? d.bytes / 1048576 : 0;
+    const t = TEXTOS[idioma];
+    estado('#estado', `${frames.length} ${t['estado.frames']} "${d.nombre}"${mb ? ` · ${mb.toFixed(0)} MB` : ''}`, 'bien');
+
+    if (autoExportar && mb > 40) {
+      autoExportar = false;
+      $('#paso-elegir').classList.remove('oculto');
+      pintarLista();
+      estado('#estado', rellenar(t['estado.pesado'], { mb: mb.toFixed(0) }), 'aviso');
+      $('#paso-elegir').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
     if (autoExportar) return exportar(frames.map((f) => f.id));
     $('#paso-elegir').classList.remove('oculto');
     pintarLista();
