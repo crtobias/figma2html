@@ -43,6 +43,21 @@ python3 -m http.server 8000
 Para publicarlo alcanza con subir la carpeta a GitHub Pages, Netlify, Vercel o cualquier
 hosting estático. No hay nada que configurar del lado del servidor.
 
+## Idiomas
+
+La página existe en dos URLs — `/` en español y `/en/` en inglés — y cada una se sirve ya
+traducida. Un buscador indexa lo que el servidor manda: si el inglés apareciera sólo después de
+correr un script, el sitio competiría por *figma to html* con contenido en español.
+
+Los textos viven en [`src/i18n.js`](src/i18n.js), que es la única fuente. Después de tocarlos:
+
+```bash
+node build.mjs      # regenera en/index.html y sitemap.xml
+```
+
+En el navegador, el idioma se elige solo a partir de `navigator.languages` y se puede cambiar
+desde la barra superior; la elección queda guardada en `localStorage`.
+
 ## Publicar tu propia copia
 
 Editá el objeto `ENLACES` arriba de [`src/app.js`](src/app.js) con tus links. Es lo único
@@ -68,6 +83,8 @@ lado.
 | `src/shell.js` | El `index.html` navegable que envuelve a los fragmentos. |
 | `src/worker.js` | Orquesta todo fuera del hilo de la UI. |
 | `src/app.js` | La interfaz y el armado del `.zip`. |
+| `src/i18n.js` | Los textos en español e inglés, y la detección de idioma. |
+| `build.mjs` | Genera `en/index.html` y el `sitemap.xml` desde el diccionario. |
 
 `extract.js` y `svg.js` son un port a JavaScript de dos scripts de Python que hacían lo mismo
 desde la terminal; la salida de ambos es numéricamente idéntica, verificada frame por frame

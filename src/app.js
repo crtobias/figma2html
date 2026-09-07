@@ -1,5 +1,6 @@
 /** La UI. El trabajo pesado va al worker; acá sólo se recogen datos y se arma el .zip. */
 import { parseFileKey } from './figma.js';
+import { TEXTOS, PIEZAS, IDIOMAS, idiomaPreferido } from './i18n.js';
 
 /** ⬇ TODO: completá con tus links. Es lo único que hay que tocar para publicar tu copia.
  *  `repo` además alimenta el botón "Código" de la barra superior. */
@@ -12,6 +13,74 @@ const ENLACES = {
 
 const $ = (s) => document.querySelector(s);
 const log = (...a) => console.log('[f2h]', ...a);
+
+// --- Idioma -----------------------------------------------------------------------------------
+// La página se sirve ya traducida (/ en español, /en/ en inglés), así que esto no traduce en el
+// arranque: sólo deja cambiar de idioma sin recargar y manda a la otra URL al visitante que cae
+// en la que no le corresponde. Un buscador tiene que ver contenido estable en cada URL.
+
+const IDIOMA_GUARDADO = 'figmatohtml:idioma';
+const idiomaDeLaPagina = document.documentElement.lang === 'en' ? 'en' : 'es';
+let idioma = idiomaDeLaPagina;
+
+const rellenar = (texto, piezas) => texto.replace(/\{(\w+)\}/g, (_, k) => piezas[k] ?? `{${k}}`);
+
+function traducir(nuevo) {
+  const t = TEXTOS[nuevo];
+  if (!t) return;
+  idioma = nuevo;
+  document.documentElement.lang = t['html.lang'];
+  document.title = t['meta.title'];
+  $('meta[name="description"]')?.setAttribute('content', t['meta.description']);
+
+  for (const el of document.querySelectorAll('[data-i18n]')) {
+    const v = t[el.dataset.i18n];
+    if (v != null) el.textContent = v;
+  }
+  for (const el of document.querySelectorAll('[data-i18n-placeholder]')) {
+    const v = t[el.dataset.i18nPlaceholder];
+    if (v != null) el.placeholder = v;
+  }
+  // Los párrafos con marcado adentro se arman acá: el texto trae {marcadores} y cada uno se
+  // reemplaza por su etiqueta ya escapada. Nunca se interpola contenido de afuera.
+  for (const el of document.querySelectorAll('[data-i18n-html]')) {
+    const v = t[el.dataset.i18nHtml];
+    if (v != null) el.innerHTML = rellenar(v, { api: '<code>api.figma.com</code>' });
+  }
+  for (const el of document.querySelectorAll('[data-i18n-token-p]')) {
+    const v = t['token.p'];
+    if (v != null) el.innerHTML = rellenar(v, Object.fromEntries(Object.entries(PIEZAS[nuevo]).map(([k, w]) => [k, `<em>${w}</em>`])));
+  }
+  pintarIdiomas();
+  pintarLinks();
+  if (frames.length) pintarLista();
+}
+
+function pintarIdiomas() {
+  $('#idiomas').innerHTML = Object.entries(IDIOMAS)
+    .map(([cod, etiqueta]) => `<button type="button" data-idioma="${cod}"${cod === idioma ? ' class="activo" aria-current="true"' : ''}>${etiqueta}</button>`)
+    .join('');
+}
+
+$('#idiomas').addEventListener('click', (e) => {
+  const cod = e.target.dataset.idioma;
+  if (!cod || cod === idioma) return;
+  localStorage.setItem(IDIOMA_GUARDADO, cod);
+  // Cada idioma tiene su URL propia: se navega, así el link que comparta el visitante ya viene
+  // en el idioma que estaba viendo.
+  location.href = cod === 'en' ? '/en/' : '/';
+});
+
+// Quien llega desde afuera cae en la URL que su navegador pide, salvo que haya elegido a mano.
+// El redirect corre una sola vez y sólo si el idioma correcto es el otro, para no rebotar.
+(function elegirIdiomaAlEntrar() {
+  let guardado = null;
+  try { guardado = localStorage.getItem(IDIOMA_GUARDADO); } catch { /* modo privado */ }
+  const quiere = idiomaPreferido(guardado, navigator.languages || [navigator.language]);
+  if (quiere === idiomaDeLaPagina) return;
+  const destino = quiere === 'en' ? '/en/' : '/';
+  if (location.pathname !== destino) location.replace(destino + location.hash);
+})();
 
 const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
 
@@ -36,12 +105,35 @@ let autoExportar = true;
 // se lee como que algo se colgó.
 let exportando = false;
 
-$('#links').innerHTML = Object.entries(ENLACES)
-  .map(([texto, url]) => {
-    const nombre = texto === 'repo' ? 'Repositorio' : texto;
-    return `<a href="${url}" target="_blank" rel="noopener">${nombre}</a>`;
-  }).join('');
-$('[data-link="repo"]').href = ENLACES.repo;
+function pintarLinks() {
+  $('#links').innerHTML = Object.entries(ENLACES)
+    .map(([texto, url]) => {
+      const nombre = texto === 'repo' ? TEXTOS[idioma]['pie.repo'] : texto;
+      return `<a href="${url}" target="_blank" rel="noopener">${nombre}</a>`;
+    }).join('');
+  $('[data-link="repo"]').href = ENLACES.repo;
+}
+pintarIdiomas();
+pintarLinks();
+
+// La cota del hero dice el tamaño REAL de la caja que envuelve al título. En una herramienta
+// que se vende como "medí, no aproximes", un número escrito a mano sería la peor primera
+// impresión posible — y además el bloque mide distinto en cada idioma y en cada ancho.
+function medirTitulo() {
+  const caja = document.querySelector('.medido');
+  const cota = document.querySelector('.cota-h');
+  const alto = document.querySelector('.cota-v');
+  if (!caja || !cota) return;
+  const r = caja.getBoundingClientRect();
+  const w = Math.round(r.width);
+  const h = Math.round(r.height);
+  cota.textContent = `${w} × ${h}`;
+  if (alto) alto.textContent = `↕ ${h}`;
+}
+medirTitulo();
+addEventListener('resize', medirTitulo);
+// Las fuentes llegan después del primer layout y cambian el ancho del título.
+document.fonts?.ready.then(medirTitulo);
 
 // El token se guarda sólo si el usuario lo pide, y sólo en su propio navegador.
 const GUARDADO = 'figmatohtml:token';

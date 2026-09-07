@@ -77,6 +77,17 @@ svg { flex-shrink: 0; }
 .boton-fantasma svg { width: 15px; height: 15px; }
 .boton-fantasma:hover { border-color: var(--acento); }
 
+/* Selector de idioma: dos pastillas dentro de un mismo marco, para que se lea como un
+   interruptor de dos posiciones y no como dos botones sueltos. */
+.idiomas { display: flex; padding: 2px; border: 1px solid var(--borde-input); border-radius: 7px; }
+.idiomas button {
+  padding: 5px 10px; border: none; border-radius: 5px; background: none;
+  color: var(--muted); font: 600 12px 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: .04em; cursor: pointer;
+}
+.idiomas button:hover { color: var(--text); }
+.idiomas button.activo { background: var(--acento); color: var(--ground); }
+
 /* --- Hero ---------------------------------------------------------------------------------- */
 .hero {
   display: flex;
@@ -446,6 +457,7 @@ footer {
   :root { --pad-x: 22px; }
   .nav { padding: 18px var(--pad-x); }
   .nav-links > a:not(.boton-fantasma) { display: none; }
+  .idiomas button { padding: 5px 8px; }
   .bajada { font-size: 17px; }
   .sellos { flex-direction: column; gap: 12px; }
   .pasos, .grilla { grid-template-columns: minmax(0, 1fr); }
