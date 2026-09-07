@@ -1,6 +1,10 @@
 # figma2html
 
-**Medí el diseño. No lo aproximes.**
+### [figma2html.online](https://figma2html.online) · **Medí el diseño. No lo aproximes.**
+
+[![Licencia MIT](https://img.shields.io/badge/Licencia-MIT-ffb020?style=flat-square)](LICENSE)
+[![Sin backend](https://img.shields.io/badge/Backend-ninguno-0e0f12?style=flat-square)](#correrlo)
+[![Sin dependencias](https://img.shields.io/badge/Dependencias-JSZip-0e0f12?style=flat-square)](#qué-hay-adentro)
 
 Convierte un archivo de Figma en HTML donde cada elemento está en su caja exacta —
 ancho, alto, padding y gaps reales, listos para inspeccionar con las DevTools.
@@ -100,6 +104,12 @@ assets/         ← los íconos como SVG locales (las URLs de Figma vencen a los
 
 Cada elemento lleva `data-node-id`, `data-name` y `data-type`.
 
+## Créditos
+
+Hecho por [Tobias González Arriola](https://tobias-gonzalez-arriola.vercel.app/) ·
+[GitHub](https://github.com/crtobias) ·
+[LinkedIn](https://www.linkedin.com/in/tobias-gonzalez-arriola-0a2399273/)
+
 ## Licencia
 
-MIT.
+MIT — ver [LICENSE](LICENSE).
