@@ -10,18 +10,13 @@ export function construirIndice(pantallas, { titulo, subtitulo, fuentes = [] }) 
   const familias = [...new Set([...fuentes, 'Inter'])]
     .map((f) => `family=${f.replace(/ /g, '+')}:wght@400;500;600;700`).join('&');
   const fuentesUrl = `https://fonts.googleapis.com/css2?${familias}&display=swap`;
-  // El índice va agrupado por viewport: son las mismas pantallas dos veces y sin el corte la
-  // lista se lee como si fueran el doble de pantallas distintas.
-  const lineas = [];
-  let grupoActual = null;
-  for (const p of pantallas) {
-    const grupo = p.viewport === 'mobile' ? 'Mobile' : 'Desktop';
-    if (grupo !== grupoActual) {
-      lineas.push(`      <p class="wf-navGroup">${grupo}</p>`);
-      grupoActual = grupo;
-    }
-    lineas.push(`      <a href="#${p.slug}">${esc(p.name)}</a>`);
-  }
+  // El índice respeta el orden del archivo: es el que eligió quien diseñó, y agrupar por
+  // viewport lo rompería. Como desktop y mobile se alternan, el viewport va como etiqueta en
+  // cada línea en vez de como encabezado — si no, "Desktop" y "Mobile" aparecen media docena
+  // de veces cada uno y dejan de significar nada.
+  const lineas = pantallas.map((p) => (
+    `      <a href="#${p.slug}"><span class="wf-navVp wf-navVp-${p.viewport}"></span>${esc(p.name)}</a>`
+  ));
 
   return `<!doctype html>
 <html lang="es">
@@ -42,9 +37,9 @@ export function construirIndice(pantallas, { titulo, subtitulo, fuentes = [] }) 
   .wf-frame .wf-n { position: absolute; margin: 0; }
   .wf-frame img.wf-n { display: block; }
 
-  /* Una caja de texto de Figma tiene alto propio y el texto se alinea adentro. `display: flex`
-     en columna + el `justify-content` que pone el conversor reproduce ese alineado vertical;
-     `pre-wrap` conserva los saltos de línea que el diseñador escribió a mano. */
+  /* Una caja de texto de Figma tiene alto propio y el texto se alinea adentro. 'display: flex'
+     en columna + el 'justify-content' que pone el conversor reproduce ese alineado vertical;
+     'pre-wrap' conserva los saltos de línea que el diseñador escribió a mano. */
   .wf-frame .wf-t { display: flex; flex-direction: column; white-space: pre-wrap; }
 
   :root {
@@ -59,17 +54,21 @@ export function construirIndice(pantallas, { titulo, subtitulo, fuentes = [] }) 
     border-right: 1px solid var(--wf-line); z-index: 100;
   }
   .wf-nav h1 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
-  .wf-nav p  { margin: 0 0 20px; font-size: 12px; color: var(--wf-muted); }
+  .wf-nav p  { margin: 0 0 12px; font-size: 12px; color: var(--wf-muted); }
+  .wf-leyenda { display: flex; align-items: center; gap: 6px; margin-bottom: 18px !important; font-size: 11px; }
+  .wf-leyenda .wf-navVp { margin-left: 6px; }
+  .wf-leyenda .wf-navVp:first-child { margin-left: 0; }
   .wf-nav a {
-    display: block; padding: 7px 10px; border-radius: 6px; color: var(--wf-muted);
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 7px 10px; border-radius: 6px; color: var(--wf-muted);
     text-decoration: none; font-size: 12.5px; line-height: 1.35;
   }
+  /* Un punto por viewport: dice desktop o mobile sin gastar una línea de texto por pantalla. */
+  .wf-navVp { flex: none; width: 6px; height: 6px; border-radius: 50%; }
+  .wf-navVp-desktop { background: #6ea8fe; }
+  .wf-navVp-mobile  { background: var(--wf-accent); }
   .wf-nav a:hover { background: rgba(255,255,255,.06); color: var(--wf-text); }
   .wf-nav a.is-current { background: rgba(230,126,34,.14); color: var(--wf-accent); }
-  .wf-navGroup {
-    margin: 18px 0 6px; font-size: 11px; letter-spacing: .08em;
-    text-transform: uppercase; color: #6d747b;
-  }
 
   .wf-main { margin-left: 260px; padding: 24px 32px 120px; }
   .wf-screen { margin-bottom: 56px; scroll-margin-top: 24px; }
@@ -77,8 +76,8 @@ export function construirIndice(pantallas, { titulo, subtitulo, fuentes = [] }) 
   .wf-head h2 { margin: 0; font-size: 15px; font-weight: 600; }
   .wf-head span { font-size: 12px; color: var(--wf-muted); font-variant-numeric: tabular-nums; }
 
-  /* El frame se dibuja al ancho real de Figma y se escala con `zoom` para que entre en pantalla.
-     `zoom` y no `transform: scale()` a propósito: scale no reflowea, deja el hueco del tamaño
+  /* El frame se dibuja al ancho real de Figma y se escala con 'zoom' para que entre en pantalla.
+     'zoom' y no 'transform: scale()' a propósito: scale no reflowea, deja el hueco del tamaño
      original y hay que compensarlo con márgenes negativos. */
   .wf-frame {
     position: relative; background: #f8f9fa; border: 1px solid var(--wf-line);
@@ -104,6 +103,10 @@ export function construirIndice(pantallas, { titulo, subtitulo, fuentes = [] }) 
 <nav class="wf-nav">
   <h1>${esc(titulo)}</h1>
   <p>${esc(subtitulo)}</p>
+  <p class="wf-leyenda">
+    <span class="wf-navVp wf-navVp-desktop"></span> desktop
+    <span class="wf-navVp wf-navVp-mobile"></span> mobile
+  </p>
 ${lineas.join('\n')}
 </nav>
 

@@ -42,7 +42,12 @@ export function getFile(fileKey, token) {
  * él cada nodo trae `fillGeometry`/`strokeGeometry`, que son path data de SVG listos para usar.
  * Se pide en lotes porque la respuesta es pesada (decenas de MB en archivos grandes).
  */
-export async function getGeometry(fileKey, ids, token, { lote = 20, onProgress } = {}) {
+export async function getGeometry(fileKey, ids, token, { onProgress } = {}) {
+  // El lote va al MÁXIMO que aguante la URL, no al mínimo prudente: la cuota de Figma se cuenta
+  // **por llamada, no por nodo**, así que partir 80 frames en tandas de 20 gasta 4 veces más
+  // presupuesto que pedirlos todos juntos, para traer exactamente los mismos datos. Un id son
+  // ~9 caracteres; 400 entran de sobra en el largo práctico de una query string.
+  const lote = 400;
   const nodes = {};
   for (let i = 0; i < ids.length; i += lote) {
     const tanda = ids.slice(i, i + lote);

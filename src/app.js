@@ -11,12 +11,30 @@ const ENLACES = {
 };
 
 const $ = (s) => document.querySelector(s);
+const log = (...a) => console.log('[f2h]', ...a);
+
 const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
+
+// Sin esto, un worker que ni siquiera llega a arrancar (un error de sintaxis en un módulo que
+// importa, por ejemplo) deja la UI colgada para siempre en el último mensaje que alcanzó a
+// mostrar: `postMessage` no falla, simplemente nadie contesta nunca.
+worker.onerror = (e) => {
+  console.error('[f2h] el worker no arrancó', e);
+  const donde = exportando ? '#estado-3' : '#estado';
+  estado(donde, `No arrancó el motor de conversión${e.message ? `: ${e.message}` : ''}. Mirá la consola.`, 'mal');
+  $('#convertir').disabled = false;
+  $('#exportar').disabled = false;
+  $('#barra').classList.remove('indeterminada');
+};
 
 let frames = [];
 let nombreArchivo = 'figma-export';
 // Al pegar token y URL se exporta todo de una. El selector de pantallas es el desvío opcional.
 let autoExportar = true;
+// El panel con la barra recién aparece cuando hay una exportación en curso: mientras se baja el
+// archivo no hay porcentaje que mostrar (un fetch no reporta avance) y una barra clavada en cero
+// se lee como que algo se colgó.
+let exportando = false;
 
 $('#links').innerHTML = Object.entries(ENLACES)
   .map(([texto, url]) => {
@@ -45,6 +63,7 @@ function analizar() {
   localStorage[$('#recordar').checked ? 'setItem' : 'removeItem'](GUARDADO, token());
   $('#convertir').disabled = true;
   estado('#estado', 'Bajando el archivo… puede tardar, son decenas de MB.', 'trabajando');
+  log('analizar', key);
   worker.postMessage({ op: 'analizar', key, token: token() });
   return true;
 }
@@ -103,6 +122,8 @@ $('.barra-lista').addEventListener('click', (e) => {
 $('#exportar').addEventListener('click', () => exportar(frames.filter((f) => f.sel).map((f) => f.id)));
 
 function exportar(ids) {
+  log('exportar', ids.length, 'frames');
+  exportando = true;
   $('#exportar').disabled = true;
   $('#paso-listo').classList.remove('oculto');
   $('#resultado').innerHTML = '';
@@ -114,6 +135,7 @@ function exportar(ids) {
 // --- Empaquetado -------------------------------------------------------------------------------
 
 async function empaquetar(d) {
+  log('empaquetando', d.pantallas.length, 'pantallas y', d.svgs.length, 'íconos');
   estado('#estado-3', 'Comprimiendo el .zip…', 'trabajando');
   const zip = new JSZip();
   zip.file('index.html', d.index);
@@ -133,6 +155,7 @@ async function empaquetar(d) {
     (m) => { $('#barra').style.width = `${92 + m.percent * 0.08}%`; },
   );
 
+  $('#barra').classList.remove('indeterminada');
   const url = URL.createObjectURL(blob);
   const nombre = `${nombreArchivo.replace(/[^\w-]+/g, '-').toLowerCase()}-html.zip`;
   const mb = (blob.size / 1024 / 1024).toFixed(1);
@@ -150,7 +173,10 @@ async function empaquetar(d) {
 // --- Mensajes del worker -----------------------------------------------------------------------
 
 worker.onmessage = async ({ data: d }) => {
+  if (d.tipo !== 'progreso') log('←', d.tipo, d.mensaje || '');
   if (d.tipo === 'error') {
+    exportando = false;
+    $('#barra').classList.remove('indeterminada');
     $('#convertir').disabled = false;
     $('#exportar').disabled = false;
     const enProgreso = !$('#paso-listo').classList.contains('oculto');
@@ -170,8 +196,12 @@ worker.onmessage = async ({ data: d }) => {
   }
 
   if (d.tipo === 'progreso') {
+    // Antes de exportar, lo que hay para contar es la bajada del archivo: va en el formulario.
+    if (!exportando) return estado('#estado', d.texto, 'trabajando');
     $('#paso-listo').classList.remove('oculto');
     estado('#estado-3', d.texto, 'trabajando');
+    // Sin porcentaje la barra corre en modo indeterminado en vez de quedarse quieta.
+    $('#barra').classList.toggle('indeterminada', d.pct == null);
     if (d.pct != null) $('#barra').style.width = `${d.pct}%`;
   }
 

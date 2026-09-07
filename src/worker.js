@@ -13,12 +13,17 @@ let doc = null;      // la respuesta de /v1/files, cacheada entre "analizar" y "
 let fileKey = null;
 
 const avisar = (texto, pct) => postMessage({ tipo: 'progreso', texto, pct });
+const log = (...a) => console.log('[f2h:worker]', ...a);
+log('worker arrancado');
 
 async function analizar({ key, token }) {
   fileKey = key;
   avisar('Bajando el árbol del archivo…');
+  const t0 = performance.now();
   doc = await getFile(key, token);
+  log(`archivo "${doc.name}" bajado en ${((performance.now() - t0) / 1000).toFixed(1)}s`);
   const frames = listarFrames(doc);
+  log(frames.length, 'frames encontrados');
   postMessage({ tipo: 'frames', nombre: doc.name, frames });
 }
 
@@ -64,6 +69,7 @@ async function exportar({ ids, token, titulo }) {
     onProgress: (hechos, total) => avisar(`Pidiendo la geometría… ${hechos}/${total} frames`, 30 + (35 * hechos) / total),
   });
 
+  log(imagenes.size, 'subárboles vectoriales para dibujar');
   avisar('Dibujando los SVG…', 65);
   const gidx = indexarGeometria(geo);
   const { svgs, vacios, ausentes } = generarSvgs([...imagenes], gidx, {
@@ -94,6 +100,7 @@ onmessage = async (e) => {
     if (e.data.op === 'analizar') await analizar(e.data);
     if (e.data.op === 'exportar') await exportar(e.data);
   } catch (err) {
+    console.error('[f2h:worker]', err);
     postMessage({ tipo: 'error', mensaje: err.message || String(err) });
   }
 };
