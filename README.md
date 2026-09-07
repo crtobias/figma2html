@@ -86,6 +86,7 @@ lado.
 | `src/svg.js` | Los íconos, dibujados desde la geometría vectorial. |
 | `src/shell.js` | El `index.html` navegable que envuelve a los fragmentos. |
 | `src/worker.js` | Orquesta todo fuera del hilo de la UI. |
+| `src/jsx.js` | Las mismas pantallas como componentes de React con SCSS. |
 | `src/app.js` | La interfaz y el armado del `.zip`. |
 | `src/i18n.js` | Los textos en español e inglés, y la detección de idioma. |
 | `build.mjs` | Genera `en/index.html` y el `sitemap.xml` desde el diccionario. |
@@ -100,9 +101,25 @@ sobre un archivo real de 80 pantallas y 1472 íconos.
 index.html      ← el índice navegable, con buscador, escala 1:1 y modo "ver cajas"
 screens/        ← un fragmento HTML por pantalla
 assets/         ← los íconos como SVG locales (las URLs de Figma vencen a los 7 días)
+jsx/            ← las mismas pantallas como componentes de React con SCSS
+  index.js        un import para todas
+  styles/_base.scss
+  screens/<Pantalla>.jsx + .scss
 ```
 
 Cada elemento lleva `data-node-id`, `data-name` y `data-type`.
+
+### Las dos salidas miden lo mismo
+
+El JSX no se genera reescribiendo el HTML: los dos salen de la misma `describir()` de cada nodo
+([`src/extract.js`](src/extract.js)). Si uno se derivara del otro, un arreglo tendría que
+acordarse de los dos, y el día que no se acuerde dejan de coincidir sin que nadie se entere.
+
+Verificado renderizando ambos y midiendo cada caja con `getBoundingClientRect`: 1724 nodos en 5
+pantallas —de 345×1000 a 1920×5701— con cero diferencias por encima de medio pixel.
+
+Los estilos del componente van al `.scss` y no a `style={{}}` a propósito: un estilo inline no se
+puede pisar desde una hoja sin `!important`, así que sería exacto pero imposible de retocar.
 
 ## Créditos
 

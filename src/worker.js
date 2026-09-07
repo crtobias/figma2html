@@ -8,6 +8,7 @@ import { getFile, getGeometry, listarFrames, indexarFrames } from './figma.js';
 import { extraerFrame, slugify, viewportDe } from './extract.js';
 import { indexarGeometria, generarSvgs } from './svg.js';
 import { construirIndice } from './shell.js';
+import { componenteDeFrame, BASE_SCSS, LEEME_JSX } from './jsx.js';
 
 let doc = null;      // la respuesta de /v1/files, cacheada entre "analizar" y "exportar"
 let fileKey = null;
@@ -37,10 +38,14 @@ function fuentesUsadas(nodo, salida = new Set()) {
 async function exportar({ ids, token, titulo }) {
   const idx = indexarFrames(doc);
   const usados = new Set();
+  // Los nombres de componente se desambiguan aparte de los slugs: quitan el prefijo del
+  // viewport, así que dos slugs distintos pueden querer el mismo nombre.
+  const nombresUsados = new Set();
 
   // 1. Los fragmentos HTML. Es puro recorrido del JSON que ya tenemos: no toca la red.
   avisar('Convirtiendo frames a HTML…', 5);
   const pantallas = [];
+  const componentes = [];
   const fuentes = new Set();
   const imagenes = new Set();
   for (const [i, id] of ids.entries()) {
@@ -60,6 +65,12 @@ async function exportar({ ids, token, titulo }) {
     r.imagenes.forEach((x) => imagenes.add(x));
     fuentesUsadas(frame, fuentes);
     pantallas.push({ slug, name: frame.name, viewport, html: r.html });
+
+    // La misma pantalla como componente de React, desde la misma descripción de nodos.
+    componentes.push(componenteDeFrame({
+      nombre: frame.name, slug, nodeId: frame.id,
+      ancho: r.width, alto: r.height, fondo: r.fondo, hijos: r.descripcion, usados: nombresUsados,
+    }));
     avisar(`Convirtiendo frames a HTML… ${i + 1}/${ids.length}`, 5 + (25 * (i + 1)) / ids.length);
   }
 
@@ -86,9 +97,21 @@ async function exportar({ ids, token, titulo }) {
     fuentes: [...fuentes],
   });
 
+  // El índice de la carpeta jsx: un solo import para tenerlas todas a mano.
+  const indiceJsx = `// Todas las pantallas exportadas, para importarlas de una.\n`
+    + `// Generado por figma2html.online\n\n`
+    + componentes.map((c) => `export { default as ${c.componente} } from './screens/${c.componente}.jsx';`).join('\n')
+    + '\n';
+
   postMessage({
     tipo: 'listo',
     index,
+    jsx: {
+      componentes: componentes.map(({ componente, jsx, scss }) => ({ componente, jsx, scss })),
+      base: BASE_SCSS,
+      indice: indiceJsx,
+      leeme: LEEME_JSX,
+    },
     pantallas: pantallas.map(({ slug, html }) => ({ slug, html })),
     svgs: [...svgs].map(([id, svg]) => [id.replaceAll(':', '-'), svg]),
     aviso: { vacios: vacios.length, ausentes: ausentes.length },

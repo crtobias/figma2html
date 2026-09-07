@@ -104,34 +104,38 @@ function caja(node, ox, oy) {
   return [r2(b.x - ox), r2(b.y - oy), r2(b.width), r2(b.height)];
 }
 
-/** `ox/oy` es la esquina superior izquierda del **padre**, no la del frame.
+/** Un nodo, descrito una sola vez: qué es, en qué caja va y con qué estilos.
  *
- * Cada `<div>` que se emite es `position: absolute` dentro del anterior, así que sus hijos ya
- * parten de su esquina: si a todos se les restara el origen del frame, cada nivel de anidación
- * sumaría el desplazamiento del padre otra vez y el contenido se iría en diagonal. */
-function render(node, ox, oy, imagenes, nivel = 1) {
-  if (node.visible === false) return '';
+ * Existe para que el HTML y el JSX no se traduzcan uno al otro sino que salgan los dos de acá.
+ * Si el JSX se generara reescribiendo el HTML ya emitido, cualquier arreglo en uno tendría que
+ * acordarse del otro, y el día que no se acuerde las dos salidas dejan de coincidir en silencio.
+ *
+ * `ox/oy` es la esquina superior izquierda del **padre**, no la del frame: cada caja es
+ * `position: absolute` dentro de la anterior, así que sus hijos ya parten de su esquina. Restar
+ * siempre el origen del frame sumaría el desplazamiento del padre en cada nivel y el contenido
+ * se iría en diagonal.
+ */
+export function describir(node, ox, oy, imagenes) {
+  if (node.visible === false) return null;
   const c = caja(node, ox, oy);
-  if (!c) return '';
+  if (!c) return null;
   const [x, y, w, h] = c;
-  const sangria = '  '.repeat(nivel);
 
   const css = [`left: ${x}px`, `top: ${y}px`, `width: ${w}px`, `height: ${h}px`];
   if ((node.opacity ?? 1) !== 1) css.push(`opacity: ${node.opacity}`);
   const s = sombra(node);
   if (s) css.push(`box-shadow: ${s}`);
 
-  const attrs = `data-node-id="${esc(node.id)}" data-name="${esc(node.name || '')}" data-type="${node.type}"`;
+  const base = { id: node.id, nombre: node.name || '', tipo: node.type };
 
   if (esImagen(node)) {
     imagenes.add(node.id);
-    const archivo = `assets/${node.id.replaceAll(':', '-')}.svg`;
-    return `${sangria}<img class="wf-n" ${attrs} style="${css.join('; ')}" src="${archivo}" alt="${esc(node.name || '')}">\n`;
+    return { ...base, forma: 'img', css, archivo: `assets/${node.id.replaceAll(':', '-')}.svg` };
   }
 
   if (node.type === 'TEXT') {
     css.push(estiloTexto(node));
-    return `${sangria}<div class="wf-n wf-t" ${attrs} style="${css.join('; ')}">${esc(node.characters || '')}</div>\n`;
+    return { ...base, forma: 'texto', css, texto: node.characters || '' };
   }
 
   const bg = relleno(node);
@@ -148,17 +152,46 @@ function render(node, ox, oy, imagenes, nivel = 1) {
   if (node.clipsContent) css.push('overflow: hidden');
 
   const bb = node.absoluteBoundingBox;
-  const hijos = (node.children || []).map((k) => render(k, bb.x, bb.y, imagenes, nivel + 1)).join('');
-  return `${sangria}<div class="wf-n" ${attrs} style="${css.join('; ')}">\n${hijos}${sangria}</div>\n`;
+  const hijos = (node.children || [])
+    .map((k) => describir(k, bb.x, bb.y, imagenes))
+    .filter(Boolean);
+  return { ...base, forma: 'caja', css, hijos };
 }
 
-/** Un frame → `{ html, imagenes }`. `imagenes` son los ids de los subárboles colapsados a SVG. */
+/** La descripción de un nodo, en HTML. */
+function render(node, ox, oy, imagenes, nivel = 1) {
+  const d = describir(node, ox, oy, imagenes);
+  return d ? emitirHtml(d, nivel) : '';
+}
+
+function emitirHtml(d, nivel) {
+  const sangria = '  '.repeat(nivel);
+  const estilo = d.css.join('; ');
+  const attrs = `data-node-id="${esc(d.id)}" data-name="${esc(d.nombre)}" data-type="${d.tipo}"`;
+
+  if (d.forma === 'img') {
+    return `${sangria}<img class="wf-n" ${attrs} style="${estilo}" src="${d.archivo}" alt="${esc(d.nombre)}">\n`;
+  }
+  if (d.forma === 'texto') {
+    return `${sangria}<div class="wf-n wf-t" ${attrs} style="${estilo}">${esc(d.texto)}</div>\n`;
+  }
+  const hijos = d.hijos.map((k) => emitirHtml(k, nivel + 1)).join('');
+  return `${sangria}<div class="wf-n" ${attrs} style="${estilo}">\n${hijos}${sangria}</div>\n`;
+}
+
+/** Un frame → `{ html, imagenes, descripcion }`.
+ *
+ * `imagenes` son los ids de los subárboles colapsados a SVG. `descripcion` es el árbol de nodos
+ * ya resuelto, que es lo que consume el generador de React para no volver a interpretar nada. */
 export function extraerFrame(frame, { slug, viewport }) {
   const b = frame.absoluteBoundingBox;
   const w = Math.round(b.width);
   const h = Math.round(b.height);
   const imagenes = new Set();
-  const cuerpo = (frame.children || []).map((c) => render(c, b.x, b.y, imagenes, 3)).join('');
+  const descripcion = (frame.children || [])
+    .map((c) => describir(c, b.x, b.y, imagenes))
+    .filter(Boolean);
+  const cuerpo = descripcion.map((d) => emitirHtml(d, 3)).join('');
   const fondo = relleno(frame) || '#ffffff';
 
   const html = `<section class="wf-screen" id="${slug}" data-node-id="${frame.id}" data-viewport="${viewport}" data-width="${w}">
@@ -170,7 +203,7 @@ export function extraerFrame(frame, { slug, viewport }) {
 ${cuerpo}  </div>
 </section>
 `;
-  return { html, imagenes: [...imagenes], width: w, height: h };
+  return { html, imagenes: [...imagenes], width: w, height: h, descripcion, fondo };
 }
 
 /** El nombre de archivo y el ancla en el índice. */

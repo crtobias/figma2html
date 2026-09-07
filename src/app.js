@@ -237,10 +237,24 @@ async function empaquetar(d) {
   for (const p of d.pantallas) screens.file(`${p.slug}.html`, p.html);
   const assets = zip.folder('assets');
   for (const [nombre, svg] of d.svgs) assets.file(`${nombre}.svg`, svg);
+
+  // Las mismas pantallas como componentes de React, para quien las quiera llevar a un proyecto.
+  if (d.jsx) {
+    const jsx = zip.folder('jsx');
+    jsx.file('README.md', d.jsx.leeme);
+    jsx.file('index.js', d.jsx.indice);
+    jsx.folder('styles').file('_base.scss', d.jsx.base);
+    const screens = jsx.folder('screens');
+    for (const c of d.jsx.componentes) {
+      screens.file(`${c.componente}.jsx`, c.jsx);
+      screens.file(`${c.componente}.scss`, c.scss);
+    }
+  }
   zip.file('LEEME.txt',
     'Abrí index.html en el navegador.\n\n'
     + 'screens/ — un fragmento HTML por pantalla, con las medidas exactas de Figma.\n'
-    + 'assets/  — los íconos, dibujados desde la geometría vectorial del archivo.\n\n'
+    + 'assets/  — los íconos, dibujados desde la geometría vectorial del archivo.\n'
+    + 'jsx/     — las mismas pantallas como componentes de React con SCSS. Ver jsx/README.md\n\n'
     + 'Cada elemento lleva data-node-id, data-name y data-type: inspeccionalo con las\n'
     + 'DevTools para leer el tamaño y la posición reales de cualquier caja.\n');
 
